@@ -10,15 +10,31 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { useActionState } from 'react';
 
+
+import React, { useState } from 'react'; // Ensure React is imported if using JSX
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
+  const initialState: State = { message: null, errors: {} };
 
-  const initialState: State = { message: null, errors: {}}
-  const [state, formAction] = useActionState(createInvoice, initialState)
+  const [state, setState] = useState(initialState);
+  const wrappedCreateInvoice = async (state: State, payload?: any) => {
+    // Here you would construct your FormData from the state or payload
+    // For demonstration, let's assume payload is already FormData
+    // In a real scenario, you might need to construct FormData here
+    return createInvoice(payload); // Assuming payload can be treated as FormData
+  };
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    // Construct FormData here if necessary
+    const formData = new FormData(event.target as HTMLFormElement);
+    // Call wrappedCreateInvoice or directly call createInvoice as needed
+    const result = await wrappedCreateInvoice(state, formData);
+    setState({ ...state, ...result });
+  };
+
   return (
-    <form action={formAction}>
+    <form onSubmit={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
